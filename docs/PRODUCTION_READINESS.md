@@ -10,7 +10,7 @@ Confirm `info@taggovsolutions.com`, the `.com` destination, Florida headquarters
 
 If applicable and approved for publication, provide the legal entity, UEI, CAGE code, NAICS codes, current contract vehicles, certifications, service areas, and a properly branded downloadable capability statement. None of these have been invented. Add approved past-performance examples and specific service scopes; avoid implying government endorsement or displaying agency/customer logos without permission.
 
-The downloadable PDF in this demo is the supplied brand sheet, not a procurement capability statement. The Capitol image is extracted from the supplied reference and is only 545 × 320 pixels. Supply a licensed high-resolution original for a sharper production hero. Confirm rights to all supplied artwork.
+The downloadable PDF in this demo is the supplied brand sheet, not a procurement capability statement. The Capitol image is a cleaned derivative of the supplied reference: AI editing removed the stray lettering while retaining the dome, flag, and diagonal stripe. Its original extracted crop was 545 × 320 pixels, so the larger edited file is not a substitute for a licensed high-resolution original. The bold icon medallions are direct crops of the supplied reference, not independent artwork. Confirm rights to all supplied artwork before production.
 
 ## Replace demo contact handling and login
 

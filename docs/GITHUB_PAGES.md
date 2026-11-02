@@ -1,10 +1,10 @@
 # Move the proof of concept to GitHub Pages
 
-The site is temporarily hosted through Manus. The GitHub source and deployable copies are prepared separately. GitHub Pages and the custom domain have deliberately not been activated, following the latest request to host temporarily and move later.
+The source repository now has an existing GitHub Actions deployment workflow. A push to `iamabotama/taggovsolutions/main` selects `site/` and copies the static files into `iamabotama/taggovsolutions.io`. The workflow requires the repository's `PAGES_DEPLOY_KEY` secret and sets `taggovsolutions.io` in the Pages repository's `CNAME`. The revision preserves this workflow and does not change Pages settings or DNS.
 
 ## Repository roles
 
-`iamabotama/taggovsolutions` contains the source, with deployable files under `site/`. `iamabotama/taggovsolutions.io` contains those same deployable files directly at repository root. Update the source first, then copy only `site/` into the Pages repository. Preserve its `.git` directory and any existing `CNAME` once a custom domain is configured.
+`iamabotama/taggovsolutions` contains the source, with deployable files under `site/`. `iamabotama/taggovsolutions.io` contains those same deployable files directly at repository root. Update the source first and allow the existing workflow to synchronize the Pages repository. If deploying manually instead, copy only `site/` and preserve the Pages repository's `.git` directory and `CNAME`.
 
 There are no dependencies or build steps. Relative asset URLs work at both a repository path and a custom-domain root. `.nojekyll` bypasses Jekyll processing. Do not copy tokens, `.env` files, or managed Git configuration.
 
