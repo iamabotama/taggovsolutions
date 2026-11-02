@@ -1,0 +1,77 @@
+name: Deploy to taggovsolutions.io Pages
+
+# Any push to main (or a manual run) publishes the site to
+# iamabotama/taggovsolutions.io, which GitHub Pages serves at the custom domain.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: false
+
+env:
+  PAGES_REPO: iamabotama/taggovsolutions.io
+  CUSTOM_DOMAIN: taggovsolutions.io
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      # If Manus switches to a framework (package.json with a "build" script),
+      # build it. Otherwise this is a no-op and site/ is deployed as-is.
+      - name: Set up Node (only if there is a build)
+        if: hashFiles('package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build (only if package.json defines one)
+        if: hashFiles('package.json') != ''
+        run: |
+          if node -e "process.exit(require('./package.json').scripts?.build ? 0 : 1)"; then
+            if [ -f package-lock.json ]; then npm ci; else npm install; fi
+            npm run build
+          else
+            echo "package.json has no build script; skipping build."
+          fi
+
+      - name: Pick output directory
+        id: out
+        run: |
+          for d in dist build out site public; do
+            if [ -f "$d/index.html" ]; then echo "dir=$d" >> "$GITHUB_OUTPUT"; echo "Deploying ./$d"; exit 0; fi
+          done
+          if [ -f index.html ]; then echo "dir=." >> "$GITHUB_OUTPUT"; echo "Deploying repo root"; exit 0; fi
+          echo "::error::No index.html found in dist/, build/, out/, site/, public/ or repo root."; exit 1
+
+      - name: Check out Pages repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.PAGES_REPO }}
+          ssh-key: ${{ secrets.PAGES_DEPLOY_KEY }}
+          path: _pages
+
+      - name: Sync files
+        run: |
+          rsync -a --delete \
+            --exclude '.git' --exclude 'CNAME' \
+            --exclude '.github' --exclude '_pages' --exclude 'node_modules' \
+            --exclude '.env' --exclude '.env.*' \
+            "${{ steps.out.outputs.dir }}/" _pages/
+          echo "$CUSTOM_DOMAIN" > _pages/CNAME
+          touch _pages/.nojekyll
+
+      - name: Commit and push
+        working-directory: _pages
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "No changes to deploy."; exit 0; fi
+          git commit -m "Deploy ${GITHUB_REPOSITORY}@${GITHUB_SHA::7}"
+          git push origin HEAD:main
